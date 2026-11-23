@@ -49,8 +49,7 @@ function useIdle(active: boolean, ms: number, onIdle: () => void) {
 export default function Booth() {
   const router = useRouter();
   const [params] = useState(() => new URLSearchParams(window.location.search));
-  const demo = params.has("demo");
-  const [setup, setSetup] = useState(() => params.has("setup"));
+  const demo = params.has("demo");  const [setup, setSetup] = useState(() => params.has("setup"));
   const [buddyId, setBuddyId] = useState<CrewId>("sunny");
   const [step, setStep] = useState<Step>({ name: "pick" });
   // The shop room behind the strip: random to start, then whatever the visitor last picked.
@@ -137,12 +136,15 @@ export default function Booth() {
 
       {(step.name === "review" || step.name === "uploading" || step.name === "done" || step.name === "failed") && (
         <section className="flex flex-1 flex-col items-center justify-center gap-6 px-page py-6 md:flex-row md:items-center md:gap-12">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={step.url}
-            alt={`Your photo strip with ${b.name}`}
-            className={`h-[min(78dvh,900px)] w-auto animate-pop rounded-md shadow-card transition-opacity duration-150 ${step.name === "review" && step.redrawing ? "opacity-60" : ""}`}
-          />
+          {/* The strip on a lighter panel, so its dark footer doesn't melt into the page. */}
+          <div className="animate-pop rounded-stage bg-mint p-6 shadow-card ring-1 ring-card-border">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={step.url}
+              alt={`Your photo strip with ${b.name}`}
+              className={`h-[min(74dvh,860px)] w-auto rounded-md shadow-card transition-opacity duration-150 ${step.name === "review" && step.redrawing ? "opacity-60" : ""}`}
+            />
+          </div>
 
           <div className="flex w-full max-w-md flex-col gap-5">
             {step.name === "review" && (
