@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-// The page a visitor's phone opens from the kiosk's QR code. Follows the phone's light or dark mode.
+// The page a visitor's phone opens from the kiosk's QR code. Dark, like the kiosk.
 export default function StripPage(props: PageProps<"/p/[id]">) {
   return (
     <main className="page-bg flex min-h-dvh flex-1 flex-col items-center gap-6 px-4 pt-[max(24px,env(safe-area-inset-top))] pb-10 sm:px-page">

@@ -1,18 +1,18 @@
-// Lays out the 4-shot strip on a canvas, in the app's look: the pale green page with its glow,
-// white RoomCards with a hairline border, the buddy posing in each shot, and the "Yo!" footer.
+// Lays out the 4-shot strip on a canvas, in the app's dark appearance: the dark green page with its glow,
+// dark RoomCards with a hairline border, the buddy posing in each shot, and the "Yo!" footer.
 
 import { SHOTS, stickerPath, type Buddy } from "./crew";
 
 export const STRIP = { width: 900, height: 2700 } as const;
 
 const C = {
-  page: "#EFF6E8",
-  glow: "#C9E6B4",
-  surface: "#FFFFFF",
-  border: "#BFCBCD",
-  ink: "#013237",
-  inkSoft: "rgba(1, 50, 55, 0.7)",
-  ember: "#E05532",
+  page: "#0F1F1D",
+  glow: "#1E3B31",
+  surface: "#172A27",
+  border: "#34463F",
+  ink: "#E6F2E0",
+  inkSoft: "rgba(230, 242, 224, 0.7)",
+  ember: "#F0714F",
 };
 
 // Layout, in strip pixels (about 2.25 px per point of the app's design).
@@ -89,7 +89,7 @@ export async function composeStrip({ shots, buddy, date = new Date(), event = "A
   ctx.fillRect(0, 0, STRIP.width, STRIP.height);
   const glow = ctx.createLinearGradient(0, 0, 0, STRIP.height * 0.45);
   glow.addColorStop(0, C.glow);
-  glow.addColorStop(1, "rgba(201, 230, 180, 0)");
+  glow.addColorStop(1, "rgba(30, 59, 49, 0)");
   ctx.fillStyle = glow;
   ctx.fillRect(0, 0, STRIP.width, STRIP.height);
 

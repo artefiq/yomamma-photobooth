@@ -88,7 +88,7 @@ export default function Booth() {
   if (setup) return <Setup onClose={() => setSetup(false)} />;
 
   return (
-    <main data-theme="light" className="kiosk page-bg flex min-h-dvh flex-1 flex-col">
+    <main data-theme="dark" className="kiosk page-bg flex min-h-dvh flex-1 flex-col">
       <header className="flex items-center justify-between px-page pt-4">
         <button type="button" onClick={goHome} className="flex items-center gap-3 rounded-full pr-3 active:scale-95" aria-label="Back to start">
           <Logo size={52} />
@@ -211,7 +211,7 @@ function Done({ link, qr, onFinish }: { link: string; qr: string; onFinish: () =
 function Setup({ onClose }: { onClose: () => void }) {
   const [key, setKey] = useState(() => kioskKey() ?? "");
   return (
-    <main data-theme="light" className="page-bg flex min-h-dvh flex-1 items-center justify-center px-page">
+    <main data-theme="dark" className="page-bg flex min-h-dvh flex-1 items-center justify-center px-page">
       <RoomCard className="flex w-full max-w-md flex-col gap-4 p-6">
         <h1 className="text-2xl font-black">Kiosk setup</h1>
         <p className="font-semibold text-ink-soft">

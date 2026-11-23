@@ -4,15 +4,37 @@
  * Yo! Mamma design tokens, ported from the iOS app:
  *   colours      YoMomma/YoMamma/Design/Theme.swift
  *   measurements YoMomma/YoMamma/Design/Constants.swift (Spacing, Radius, Size, Stroke, Opacity, Motion)
- * Light values first; dark values follow the same pattern as the app (pages and cards go dark, the ink goes pale).
- * The kiosk pins light mode with data-theme="light".
+ * The booth uses the app's dark appearance everywhere (pages and cards go dark, the ink goes pale),
+ * whatever the device's setting. The light values are kept under data-theme="light".
  */
 :root,
+[data-theme="dark"] {
+  color-scheme: dark;
+  --ink: #e6f2e0;
+  --ink-soft: rgb(230 242 224 / 0.7);
+  --ink-fixed: #013237;
+  --on-ink: #04262a;
+  --page: #0f1f1d;
+  --page-glow: #1e3b31;
+  --mint: #24443a;
+  --track: #22332f;
+  --card-border: #34463f;
+  --surface: #172a27;
+  --cream: #3b3024;
+  --wood: #5c4a33;
+  --paper: #4a3d2e;
+  --board-ink: #f6e6cc;
+  --good: #7fd08a;
+  --gold: #d9a019;
+  --ember: #f0714f;
+  --violet: #b08be6;
+  --sky: #6fb1f2;
+}
+
 [data-theme="light"] {
   color-scheme: light;
   --ink: #013237;
   --ink-soft: rgb(1 50 55 / 0.7);
-  --ink-fixed: #013237;
   --on-ink: #ffffff;
   --page: #eff6e8;
   --page-glow: #c9e6b4;
@@ -25,37 +47,15 @@
   --paper: #fff6e8;
   --board-ink: #3a2a1a;
   --good: #2a7a3b;
-  --gold: #d9a019;
   --ember: #e05532;
   --violet: #8a5cc7;
   --sky: #2f7fd1;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-    --ink: #e6f2e0;
-    --ink-soft: rgb(230 242 224 / 0.7);
-    --on-ink: #04262a;
-    --page: #0f1f1d;
-    --page-glow: #1e3b31;
-    --mint: #24443a;
-    --track: #22332f;
-    --card-border: #34463f;
-    --surface: #172a27;
-    --cream: #3b3024;
-    --wood: #5c4a33;
-    --paper: #4a3d2e;
-    --board-ink: #f6e6cc;
-    --good: #7fd08a;
-    --ember: #f0714f;
-    --violet: #b08be6;
-    --sky: #6fb1f2;
-  }
-}
-
+/* Increase Contrast: the app raises the pale ink to 90% in dark mode and to the full ink in light. */
 @media (prefers-contrast: more) {
-  :root { --ink-soft: var(--ink); }
+  :root, [data-theme="dark"] { --ink-soft: rgb(230 242 224 / 0.9); }
+  [data-theme="light"] { --ink-soft: var(--ink); }
 }
 
 @theme inline {

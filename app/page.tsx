@@ -5,7 +5,7 @@ import { CREW, IDLE, stickerPath } from "@/lib/crew";
 // The attract screen: the whole page is one big "start" button.
 export default function Attract() {
   return (
-    <main data-theme="light" className="kiosk page-bg flex min-h-dvh flex-1 flex-col">
+    <main data-theme="dark" className="kiosk page-bg flex min-h-dvh flex-1 flex-col">
       <Link
         href="/booth"
         className="flex flex-1 flex-col items-center justify-center gap-8 px-page py-10 text-center focus-visible:outline-none"
