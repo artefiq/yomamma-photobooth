@@ -6,12 +6,14 @@
 //   public/logo.svg                     the "Yo!" bubble from the launch screen
 //   public/faces/face_<buddy>_<mood>.png
 //   public/stickers/<buddy>-<pose>-<expression>.svg
+//   public/rooms/<room>.svg             the shop rooms a visitor can put behind their strip
 //   public/voices/<ID>.m4a              introductions (IN) and "completed" lines (CP)
 //   lib/voice-lines.json                which line is which, with its words
 
 import { copyFileSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { CREW, IDLE, SHOTS } from "../lib/crew.ts";
+import { ROOMS } from "../lib/rooms.ts";
 import { parseCrewArt, renderCrew, type Expression } from "./crew-render.ts";
 
 const root = resolve(import.meta.dirname, "..");
@@ -27,6 +29,12 @@ copyFileSync(join(app, "Assets.xcassets/launch_logo.imageset/launch_logo.svg"), 
 mkdirSync(out("public/faces"), { recursive: true });
 for (const f of readdirSync(join(app, "Faces")).filter((f) => f.endsWith(".png"))) {
   copyFileSync(join(app, "Faces", f), out("public/faces", f));
+}
+
+// Rooms
+mkdirSync(out("public/rooms"), { recursive: true });
+for (const { id } of ROOMS) {
+  copyFileSync(join(app, `Assets.xcassets/Shop/${id}.imageset/${id}.svg`), out("public/rooms", `${id}.svg`));
 }
 
 // Stickers

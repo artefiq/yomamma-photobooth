@@ -1,13 +1,14 @@
-// Lays out the 4-shot strip on a canvas, in the app's dark appearance: the dark green page with its glow,
-// dark RoomCards with a hairline border, the buddy posing in each shot, and the "Yo!" footer.
+// Lays out the 4-shot strip on a canvas, in the app's dark appearance: the visitor's chosen room from the
+// app's shop behind dark RoomCards with a hairline border, the buddy posing in each shot, and the "Yo!"
+// footer on the solid dark page.
 
 import { SHOTS, stickerPath, type Buddy } from "./crew";
+import { roomPath, type RoomId } from "./rooms";
 
 export const STRIP = { width: 900, height: 2700 } as const;
 
 const C = {
   page: "#0F1F1D",
-  glow: "#1E3B31",
   surface: "#172A27",
   border: "#34463F",
   ink: "#E6F2E0",
@@ -25,6 +26,8 @@ const CARD_RADIUS = 44; // Radius.card × 2
 const INSET = 16;
 const PHOTO_RADIUS = CARD_RADIUS - INSET;
 const FOOTER_TOP = TOP + 4 * CARD_H + 3 * GAP;
+// The room fills everything down to the same margin under the last card as above the first; the footer is below it.
+const ROOM_BOTTOM = FOOTER_TOP + TOP;
 
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -57,6 +60,8 @@ export function roundedFont(): string {
 export interface StripInput {
   shots: HTMLCanvasElement[];
   buddy: Buddy;
+  /** The shop room behind the cards. */
+  room: RoomId;
   date?: Date;
   /** The line under the date. */
   event?: string;
@@ -68,14 +73,15 @@ export const PHOTO_ASPECT = (CARD_W - INSET * 2) / (CARD_H - INSET * 2);
 /** Which side of the photo the buddy stands on in shot `i`. */
 export const buddySide = (i: number): "left" | "right" => (i % 2 === 0 ? "right" : "left");
 
-export async function composeStrip({ shots, buddy, date = new Date(), event = "Apple Developer Academy" }: StripInput): Promise<HTMLCanvasElement> {
+export async function composeStrip({ shots, buddy, room, date = new Date(), event = "Apple Developer Academy" }: StripInput): Promise<HTMLCanvasElement> {
   const font = roundedFont();
   await Promise.all([
     document.fonts.load(`900 80px ${font}`),
     document.fonts.load(`800 32px ${font}`),
   ]).catch(() => {});
-  const [logo, ...stickers] = await Promise.all([
+  const [logo, roomArt, ...stickers] = await Promise.all([
     loadImage("/logo.svg"),
+    loadImage(roomPath(room)),
     ...SHOTS.map((s) => loadImage(stickerPath(buddy.id, s.pose, s.expression))),
   ]);
 
@@ -84,14 +90,10 @@ export async function composeStrip({ shots, buddy, date = new Date(), event = "A
   canvas.height = STRIP.height;
   const ctx = canvas.getContext("2d")!;
 
-  // PageBackground: page colour, glow from the top.
+  // The room behind the cards, and the solid page under it for the footer.
+  drawCover(ctx, roomArt, 0, 0, STRIP.width, ROOM_BOTTOM);
   ctx.fillStyle = C.page;
-  ctx.fillRect(0, 0, STRIP.width, STRIP.height);
-  const glow = ctx.createLinearGradient(0, 0, 0, STRIP.height * 0.45);
-  glow.addColorStop(0, C.glow);
-  glow.addColorStop(1, "rgba(30, 59, 49, 0)");
-  ctx.fillStyle = glow;
-  ctx.fillRect(0, 0, STRIP.width, STRIP.height);
+  ctx.fillRect(0, ROOM_BOTTOM, STRIP.width, STRIP.height - ROOM_BOTTOM);
 
   shots.slice(0, 4).forEach((shot, i) => {
     const x = MARGIN, y = TOP + i * (CARD_H + GAP);
@@ -127,7 +129,7 @@ export async function composeStrip({ shots, buddy, date = new Date(), event = "A
 
   // Footer: the logo, the wordmark, who you posed with, the date and the event.
   const logoSize = 190;
-  const fy = FOOTER_TOP + (STRIP.height - FOOTER_TOP - logoSize) / 2 - 6;
+  const fy = ROOM_BOTTOM + (STRIP.height - ROOM_BOTTOM - logoSize) / 2;
   ctx.drawImage(logo, MARGIN - 18, fy, logoSize, logoSize);
   const tx = MARGIN + logoSize - 4;
   ctx.textBaseline = "alphabetic";

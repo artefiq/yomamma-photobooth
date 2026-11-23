@@ -9,8 +9,10 @@ import QRCode from "qrcode";
 import { buddy as findBuddy, type CrewId } from "@/lib/crew";
 import { pickLine, speak, stopSpeaking, type VoiceLine } from "@/lib/sound";
 import { composeStrip, toJpeg } from "@/lib/strip";
+import { randomRoom, type RoomId } from "@/lib/rooms";
 import { kioskKey, setKioskKey, uploadStrip, UploadError } from "@/lib/upload";
 import { BuddyPicker } from "./BuddyPicker";
+import { RoomPicker } from "./RoomPicker";
 import { ShootStage } from "./ShootStage";
 import { Icon, Logo, PillButton, RoomCard, SpeechBubble } from "./ui";
 
@@ -18,7 +20,7 @@ type Step =
   | { name: "pick" }
   | { name: "shoot" }
   | { name: "making" }
-  | { name: "review"; jpeg: Blob; url: string; line: VoiceLine | null }
+  | { name: "review"; jpeg: Blob; url: string; line: VoiceLine | null; shots: HTMLCanvasElement[]; redrawing?: boolean }
   | { name: "uploading"; jpeg: Blob; url: string }
   | { name: "done"; jpeg: Blob; url: string; link: string; qr: string }
   | { name: "failed"; jpeg: Blob; url: string; error: UploadError };
@@ -51,6 +53,9 @@ export default function Booth() {
   const [setup, setSetup] = useState(() => params.has("setup"));
   const [buddyId, setBuddyId] = useState<CrewId>("sunny");
   const [step, setStep] = useState<Step>({ name: "pick" });
+  // The shop room behind the strip: random to start, then whatever the visitor last picked.
+  const [room, setRoom] = useState<RoomId>(randomRoom);
+  const redraws = useRef(0);
   const urls = useRef<string[]>([]);
   const b = findBuddy(buddyId);
 
@@ -64,13 +69,28 @@ export default function Booth() {
 
   async function make(shots: HTMLCanvasElement[]) {
     setStep({ name: "making" });
-    const canvas = await composeStrip({ shots, buddy: b });
-    const jpeg = await toJpeg(canvas);
-    const url = URL.createObjectURL(jpeg);
-    urls.current.push(url);
+    const { jpeg, url } = await render(shots, room);
     const line = pickLine(b.id, "done");
     speak(line);
-    setStep({ name: "review", jpeg, url, line });
+    setStep({ name: "review", jpeg, url, line, shots });
+  }
+
+  async function render(shots: HTMLCanvasElement[], r: RoomId) {
+    const jpeg = await toJpeg(await composeStrip({ shots, buddy: b, room: r }));
+    const url = URL.createObjectURL(jpeg);
+    urls.current.push(url);
+    return { jpeg, url };
+  }
+
+  /** Redraws the strip in the review step with another room behind it. */
+  async function changeRoom(r: RoomId) {
+    if (step.name !== "review" || r === room) return;
+    setRoom(r);
+    const n = ++redraws.current;
+    setStep({ ...step, redrawing: true });
+    const { jpeg, url } = await render(step.shots, r);
+    if (n !== redraws.current) return; // the visitor picked again meanwhile
+    setStep((s) => (s.name === "review" ? { ...s, jpeg, url, redrawing: false } : s));
   }
 
   async function upload(jpeg: Blob, url: string) {
@@ -121,7 +141,7 @@ export default function Booth() {
           <img
             src={step.url}
             alt={`Your photo strip with ${b.name}`}
-            className="h-[min(78dvh,900px)] w-auto animate-pop rounded-md shadow-card"
+            className={`h-[min(78dvh,900px)] w-auto animate-pop rounded-md shadow-card transition-opacity duration-150 ${step.name === "review" && step.redrawing ? "opacity-60" : ""}`}
           />
 
           <div className="flex w-full max-w-md flex-col gap-5">
@@ -136,7 +156,11 @@ export default function Booth() {
                   </SpeechBubble>
                 )}
                 <h2 className="mt-2 text-4xl font-black">Looking good!</h2>
-                <PillButton size="huge" onClick={() => upload(step.jpeg, step.url)}>
+                <div className="flex flex-col gap-3">
+                  <p className="text-lg font-extrabold text-ink-soft">Pick a background</p>
+                  <RoomPicker value={room} onChange={changeRoom} />
+                </div>
+                <PillButton size="huge" disabled={step.redrawing} onClick={() => upload(step.jpeg, step.url)}>
                   <Icon name="check" size={30} /> Keep it
                 </PillButton>
                 <PillButton kind="outlined" size="large" onClick={() => setStep({ name: "shoot" })}>
