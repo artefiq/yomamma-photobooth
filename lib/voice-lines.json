@@ -1,0 +1,432 @@
+{
+  "rio": {
+    "intro": [
+      {
+        "id": "RIO-IN01",
+        "text": "Hey. I'm Rio. Take a breath, there's no rush. If you're looking to panic-cram... you picked the wrong buddy.",
+        "src": "/voices/RIO-IN01.m4a"
+      },
+      {
+        "id": "RIO-IN02",
+        "text": "Yo. Rio. I'll be right here while you work. No pressure. Well... a little pressure.",
+        "src": "/voices/RIO-IN02.m4a"
+      },
+      {
+        "id": "RIO-IN03",
+        "text": "Hey, I'm Rio. One thing at a time, and we get through all of it. Easy.",
+        "src": "/voices/RIO-IN03.m4a"
+      },
+      {
+        "id": "RIO-IN04",
+        "text": "Name's Rio. I don't do panic. I do deep breaths, and finishing stuff.",
+        "src": "/voices/RIO-IN04.m4a"
+      },
+      {
+        "id": "RIO-IN05",
+        "text": "Rio. Your new study buddy. I keep it chill... until that phone comes out.",
+        "src": "/voices/RIO-IN05.m4a"
+      },
+      {
+        "id": "RIO-IN06",
+        "text": "What's up, I'm Rio. You bring the work, I'll bring the calm. Deal?",
+        "src": "/voices/RIO-IN06.m4a"
+      }
+    ],
+    "done": [
+      {
+        "id": "RIO-CP01",
+        "text": "You handled that. Respect.",
+        "src": "/voices/RIO-CP01.m4a"
+      },
+      {
+        "id": "RIO-CP02",
+        "text": "Made it happen. Now kick back.",
+        "src": "/voices/RIO-CP02.m4a"
+      },
+      {
+        "id": "RIO-CP03",
+        "text": "That's a win. Own it.",
+        "src": "/voices/RIO-CP03.m4a"
+      },
+      {
+        "id": "RIO-CP04",
+        "text": "Smooth work. You saw it through.",
+        "src": "/voices/RIO-CP04.m4a"
+      },
+      {
+        "id": "RIO-CP05",
+        "text": "You kept your word. That matters.",
+        "src": "/voices/RIO-CP05.m4a"
+      },
+      {
+        "id": "RIO-CP06",
+        "text": "Done and dusted. Enjoy that break.",
+        "src": "/voices/RIO-CP06.m4a"
+      },
+      {
+        "id": "RIO-CP07",
+        "text": "Quiet moves. Real progress. Nice.",
+        "src": "/voices/RIO-CP07.m4a"
+      },
+      {
+        "id": "RIO-CP08",
+        "text": "You came through. Give yourself credit.",
+        "src": "/voices/RIO-CP08.m4a"
+      },
+      {
+        "id": "RIO-CP09",
+        "text": "That's your work. Be proud of it.",
+        "src": "/voices/RIO-CP09.m4a"
+      },
+      {
+        "id": "RIO-CP10",
+        "text": "One step handled. Looking good.",
+        "src": "/voices/RIO-CP10.m4a"
+      }
+    ]
+  },
+  "sunny": {
+    "intro": [
+      {
+        "id": "SUN-IN01",
+        "text": "Hi! I'm Sunny! I've got our whole study plan mapped out. Let's tackle this first step and totally crush it!",
+        "src": "/voices/SUN-IN01.m4a"
+      },
+      {
+        "id": "SUN-IN02",
+        "text": "Hi hi! I'm Sunny, your study buddy! Today's plan? Small steps, big wins. Ready? Let's go!",
+        "src": "/voices/SUN-IN02.m4a"
+      },
+      {
+        "id": "SUN-IN03",
+        "text": "Oh, hi! I'm Sunny! You showed up, and that's already a win! Now let's grab the next one!",
+        "src": "/voices/SUN-IN03.m4a"
+      },
+      {
+        "id": "SUN-IN04",
+        "text": "I'm Sunny, and I am SO ready for this! You bring the brain, I'll bring the cheering!",
+        "src": "/voices/SUN-IN04.m4a"
+      },
+      {
+        "id": "SUN-IN05",
+        "text": "Hi! Sunny here! Step one is on the board, and we are totally knocking it out together!",
+        "src": "/voices/SUN-IN05.m4a"
+      },
+      {
+        "id": "SUN-IN06",
+        "text": "Hey, superstar! I'm Sunny! I already believe in you. Now let's prove me right!",
+        "src": "/voices/SUN-IN06.m4a"
+      }
+    ],
+    "done": [
+      {
+        "id": "SUN-CP01",
+        "text": "Yes! That's my brilliant study buddy!",
+        "src": "/voices/SUN-CP01.m4a"
+      },
+      {
+        "id": "SUN-CP02",
+        "text": "You did it! Little victory dance!",
+        "src": "/voices/SUN-CP02.m4a"
+      },
+      {
+        "id": "SUN-CP03",
+        "text": "Hard work looks good on you!",
+        "src": "/voices/SUN-CP03.m4a"
+      },
+      {
+        "id": "SUN-CP04",
+        "text": "Finished! Oh, I love this for you!",
+        "src": "/voices/SUN-CP04.m4a"
+      },
+      {
+        "id": "SUN-CP05",
+        "text": "You kept your promise! That's huge!",
+        "src": "/voices/SUN-CP05.m4a"
+      },
+      {
+        "id": "SUN-CP06",
+        "text": "That's a win! Let it sparkle!",
+        "src": "/voices/SUN-CP06.m4a"
+      },
+      {
+        "id": "SUN-CP07",
+        "text": "Look at you following through! Yes!",
+        "src": "/voices/SUN-CP07.m4a"
+      },
+      {
+        "id": "SUN-CP08",
+        "text": "One task down! Enjoy your break!",
+        "src": "/voices/SUN-CP08.m4a"
+      },
+      {
+        "id": "SUN-CP09",
+        "text": "Wait, we're done? We're DONE! Amazing!",
+        "src": "/voices/SUN-CP09.m4a"
+      },
+      {
+        "id": "SUN-CP10",
+        "text": "You made it happen! So proud!",
+        "src": "/voices/SUN-CP10.m4a"
+      }
+    ]
+  },
+  "coachJim": {
+    "intro": [
+      {
+        "id": "JIN-IN01",
+        "text": "Listen up, recruit! I'm Coach Jim. I expect zero distractions and your absolute focus. Now let's get to work.",
+        "src": "/voices/JIN-IN01.m4a"
+      },
+      {
+        "id": "JIN-IN02",
+        "text": "On your feet, recruit! Coach Jim here. Phone down, book open. We start now!",
+        "src": "/voices/JIN-IN02.m4a"
+      },
+      {
+        "id": "JIN-IN03",
+        "text": "Name's Coach Jim! I don't do excuses, and I don't do quitting. Neither do you. Let's go!",
+        "src": "/voices/JIN-IN03.m4a"
+      },
+      {
+        "id": "JIN-IN04",
+        "text": "Coach Jim, reporting for duty! You bring the effort, I'll bring the noise. Move it!",
+        "src": "/voices/JIN-IN04.m4a"
+      },
+      {
+        "id": "JIN-IN05",
+        "text": "Eyes up, recruit! I'm Coach Jim. One step at a time. Every rep counts. Go!",
+        "src": "/voices/JIN-IN05.m4a"
+      },
+      {
+        "id": "JIN-IN06",
+        "text": "I'm Coach Jim, and I'm in your corner. That means I won't go easy on you. Let's work!",
+        "src": "/voices/JIN-IN06.m4a"
+      }
+    ],
+    "done": [
+      {
+        "id": "JIN-CP01",
+        "text": "Now THAT'S what I'm talking about!",
+        "src": "/voices/JIN-CP01.m4a"
+      },
+      {
+        "id": "JIN-CP02",
+        "text": "Damn right. You put the work in!",
+        "src": "/voices/JIN-CP02.m4a"
+      },
+      {
+        "id": "JIN-CP03",
+        "text": "You finished. Stand tall. Take your break.",
+        "src": "/voices/JIN-CP03.m4a"
+      },
+      {
+        "id": "JIN-CP04",
+        "text": "Promise kept. That's how you show up!",
+        "src": "/voices/JIN-CP04.m4a"
+      },
+      {
+        "id": "JIN-CP05",
+        "text": "You saw it through. Hell yes!",
+        "src": "/voices/JIN-CP05.m4a"
+      },
+      {
+        "id": "JIN-CP06",
+        "text": "Work finished. Give yourself some credit!",
+        "src": "/voices/JIN-CP06.m4a"
+      },
+      {
+        "id": "JIN-CP07",
+        "text": "You came back swinging. Task complete!",
+        "src": "/voices/JIN-CP07.m4a"
+      },
+      {
+        "id": "JIN-CP08",
+        "text": "That's follow-through. I respect that!",
+        "src": "/voices/JIN-CP08.m4a"
+      },
+      {
+        "id": "JIN-CP09",
+        "text": "You did the work. Own that win!",
+        "src": "/voices/JIN-CP09.m4a"
+      },
+      {
+        "id": "JIN-CP10",
+        "text": "Job done. Rest up. You handled it!",
+        "src": "/voices/JIN-CP10.m4a"
+      }
+    ]
+  },
+  "mira": {
+    "intro": [
+      {
+        "id": "MIR-IN01",
+        "text": "Hello sweetie, I'm Mira. Let's get comfortable. Now... I know you aren't leaving that phone on your desk.",
+        "src": "/voices/MIR-IN01.m4a"
+      },
+      {
+        "id": "MIR-IN02",
+        "text": "Hi, honey, I'm Mira. Did you eat? Good. Now let's open that book.",
+        "src": "/voices/MIR-IN02.m4a"
+      },
+      {
+        "id": "MIR-IN03",
+        "text": "Come sit, sweetie. I'm Mira. We'll take it nice and slow... but we will finish.",
+        "src": "/voices/MIR-IN03.m4a"
+      },
+      {
+        "id": "MIR-IN04",
+        "text": "Hello, love, I'm Mira. Water, snack, comfy chair. And the phone stays over there.",
+        "src": "/voices/MIR-IN04.m4a"
+      },
+      {
+        "id": "MIR-IN05",
+        "text": "I'm Mira, sweetheart. I believe in you completely. So no little excuses today, hm?",
+        "src": "/voices/MIR-IN05.m4a"
+      },
+      {
+        "id": "MIR-IN06",
+        "text": "Hi, darling, I'm Mira. A little studying, then a nice break. Deal?",
+        "src": "/voices/MIR-IN06.m4a"
+      }
+    ],
+    "done": [
+      {
+        "id": "MIR-CP01",
+        "text": "There. You did it, sweetheart.",
+        "src": "/voices/MIR-CP01.m4a"
+      },
+      {
+        "id": "MIR-CP02",
+        "text": "Good work. Come have a break.",
+        "src": "/voices/MIR-CP02.m4a"
+      },
+      {
+        "id": "MIR-CP03",
+        "text": "You finished. I'm proud of you.",
+        "src": "/voices/MIR-CP03.m4a"
+      },
+      {
+        "id": "MIR-CP04",
+        "text": "You kept your word, love.",
+        "src": "/voices/MIR-CP04.m4a"
+      },
+      {
+        "id": "MIR-CP05",
+        "text": "That's done. Go rest those eyes.",
+        "src": "/voices/MIR-CP05.m4a"
+      },
+      {
+        "id": "MIR-CP06",
+        "text": "Look at your progress. Lovely work.",
+        "src": "/voices/MIR-CP06.m4a"
+      },
+      {
+        "id": "MIR-CP07",
+        "text": "You saw it through. Well done.",
+        "src": "/voices/MIR-CP07.m4a"
+      },
+      {
+        "id": "MIR-CP08",
+        "text": "Finished, darling. Take a little breather.",
+        "src": "/voices/MIR-CP08.m4a"
+      },
+      {
+        "id": "MIR-CP09",
+        "text": "That took effort. Give yourself credit.",
+        "src": "/voices/MIR-CP09.m4a"
+      },
+      {
+        "id": "MIR-CP10",
+        "text": "You did your part today, sweetheart.",
+        "src": "/voices/MIR-CP10.m4a"
+      }
+    ]
+  },
+  "reeves": {
+    "intro": [
+      {
+        "id": "REE-IN01",
+        "text": "Howdy, partner. Name's Reeves. I've tracked down tougher things than this homework. We'll bring it in.",
+        "src": "/voices/REE-IN01.m4a"
+      },
+      {
+        "id": "REE-IN02",
+        "text": "Reeves, at your service. I always finish the job I ride out for. Reckon you can too.",
+        "src": "/voices/REE-IN02.m4a"
+      },
+      {
+        "id": "REE-IN03",
+        "text": "Howdy. I'm Reeves. Patience and a steady hand get a body most anywhere. Let's start slow.",
+        "src": "/voices/REE-IN03.m4a"
+      },
+      {
+        "id": "REE-IN04",
+        "text": "Name's Reeves. I keep my word, and I'll help you keep yours. Now, what're we working on?",
+        "src": "/voices/REE-IN04.m4a"
+      },
+      {
+        "id": "REE-IN05",
+        "text": "Pull up a chair, friend. I'm Reeves. That phone can wait outside, like a good horse.",
+        "src": "/voices/REE-IN05.m4a"
+      },
+      {
+        "id": "REE-IN06",
+        "text": "I'm Reeves. Every trail starts with one step, and every page with one line. Ready?",
+        "src": "/voices/REE-IN06.m4a"
+      }
+    ],
+    "done": [
+      {
+        "id": "REE-CP01",
+        "text": "That's work you can hang your hat on.",
+        "src": "/voices/REE-CP01.m4a"
+      },
+      {
+        "id": "REE-CP02",
+        "text": "Mighty satisfying, seeing that one finished.",
+        "src": "/voices/REE-CP02.m4a"
+      },
+      {
+        "id": "REE-CP03",
+        "text": "Well now. You've done yourself proud.",
+        "src": "/voices/REE-CP03.m4a"
+      },
+      {
+        "id": "REE-CP04",
+        "text": "A little grit went a long way.",
+        "src": "/voices/REE-CP04.m4a"
+      },
+      {
+        "id": "REE-CP05",
+        "text": "Reckon that's worth a quiet smile.",
+        "src": "/voices/REE-CP05.m4a"
+      },
+      {
+        "id": "REE-CP06",
+        "text": "That's one less fence to mend today.",
+        "src": "/voices/REE-CP06.m4a"
+      },
+      {
+        "id": "REE-CP07",
+        "text": "You stayed with it. I admire that.",
+        "src": "/voices/REE-CP07.m4a"
+      },
+      {
+        "id": "REE-CP08",
+        "text": "Finished proper. There's a good feeling.",
+        "src": "/voices/REE-CP08.m4a"
+      },
+      {
+        "id": "REE-CP09",
+        "text": "Wouldn't mind tipping my hat to that.",
+        "src": "/voices/REE-CP09.m4a"
+      },
+      {
+        "id": "REE-CP10",
+        "text": "Work's tucked away. Porch is calling.",
+        "src": "/voices/REE-CP10.m4a"
+      }
+    ]
+  }
+}

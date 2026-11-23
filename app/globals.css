@@ -1,26 +1,157 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/*
+ * Yo! Mamma design tokens, ported from the iOS app:
+ *   colours      YoMomma/YoMamma/Design/Theme.swift
+ *   measurements YoMomma/YoMamma/Design/Constants.swift (Spacing, Radius, Size, Stroke, Opacity, Motion)
+ * Light values first; dark values follow the same pattern as the app (pages and cards go dark, the ink goes pale).
+ * The kiosk pins light mode with data-theme="light".
+ */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+  --ink: #013237;
+  --ink-soft: rgb(1 50 55 / 0.7);
+  --ink-fixed: #013237;
+  --on-ink: #ffffff;
+  --page: #eff6e8;
+  --page-glow: #c9e6b4;
+  --mint: #e0facb;
+  --track: #dfe6da;
+  --card-border: #bfcbcd;
+  --surface: #ffffff;
+  --cream: #fce7cb;
+  --wood: #e6c89b;
+  --paper: #fff6e8;
+  --board-ink: #3a2a1a;
+  --good: #2a7a3b;
+  --gold: #d9a019;
+  --ember: #e05532;
+  --violet: #8a5cc7;
+  --sky: #2f7fd1;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --ink: #e6f2e0;
+    --ink-soft: rgb(230 242 224 / 0.7);
+    --on-ink: #04262a;
+    --page: #0f1f1d;
+    --page-glow: #1e3b31;
+    --mint: #24443a;
+    --track: #22332f;
+    --card-border: #34463f;
+    --surface: #172a27;
+    --cream: #3b3024;
+    --wood: #5c4a33;
+    --paper: #4a3d2e;
+    --board-ink: #f6e6cc;
+    --good: #7fd08a;
+    --ember: #f0714f;
+    --violet: #b08be6;
+    --sky: #6fb1f2;
   }
 }
 
+@media (prefers-contrast: more) {
+  :root { --ink-soft: var(--ink); }
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-fixed: var(--ink-fixed);
+  --color-on-ink: var(--on-ink);
+  --color-page: var(--page);
+  --color-page-glow: var(--page-glow);
+  --color-mint: var(--mint);
+  --color-track: var(--track);
+  --color-card-border: var(--card-border);
+  --color-surface: var(--surface);
+  --color-cream: var(--cream);
+  --color-wood: var(--wood);
+  --color-paper: var(--paper);
+  --color-good: var(--good);
+  --color-gold: var(--gold);
+  --color-ember: var(--ember);
+  --color-violet: var(--violet);
+  --color-sky: var(--sky);
+
+  /* SF Pro Rounded on Apple devices (the app's .fontDesign(.rounded)), Nunito everywhere else. */
+  --font-rounded: ui-rounded, "SF Pro Rounded", var(--font-nunito), system-ui, sans-serif;
+  --font-sans: var(--font-rounded);
+
+  /* Radius */
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-card: 22px;
+  --radius-stage: 28px;
+
+  /* Spacing names from Constants.swift (Tailwind's numeric scale covers the rest) */
+  --spacing-page: 24px;
+  --spacing-section: 28px;
+
+  /* Shadows: liftShadow, softShadow, cardShadow */
+  --shadow-lift: 0 3px 6px rgb(0 0 0 / 0.15);
+  --shadow-soft: 0 2px 4px rgb(0 0 0 / 0.08);
+  --shadow-card: 0 5px 8px rgb(0 0 0 / 0.15);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --animate-pop: pop 300ms var(--ease-out) both;
+  --animate-flash: flash 500ms ease-out both;
+  --animate-float: float 3s ease-in-out infinite;
+
+  @keyframes pop {
+    from { transform: scale(0.6); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  @keyframes flash {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+}
+
+html,
+body,
+[data-theme] {
+  background-color: var(--page);
+  color: var(--ink);
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-rounded);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* PageBackground: the pale green page with a brighter glow from the top. */
+.page-bg {
+  background:
+    linear-gradient(to bottom, var(--page-glow), color-mix(in srgb, var(--page) 0%, transparent) 50%),
+    var(--page);
+}
+
+/* The kiosk: no text selection, no pull-to-refresh, no callouts on long-press. */
+.kiosk {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  overscroll-behavior: none;
+  touch-action: manipulation;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
 }
