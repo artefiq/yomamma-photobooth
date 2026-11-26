@@ -1,6 +1,6 @@
 "use client";
 
-// The kiosk: pick a buddy → shoot four photos → review the strip → upload → scan the QR code.
+// The kiosk: pick a buddy → shoot four photos → review (strip or story, and the room) → upload → scan the QR code.
 // Rendered on the client only (it reads the URL, the camera and localStorage).
 
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import QRCode from "qrcode";
 import { buddy as findBuddy, type CrewId } from "@/lib/crew";
 import { pickLine, speak, stopSpeaking, type VoiceLine } from "@/lib/sound";
-import { composeStrip, toJpeg } from "@/lib/strip";
+import { composeStory, composeStrip, toJpeg, type Format } from "@/lib/strip";
 import { randomRoom, type RoomId } from "@/lib/rooms";
 import { kioskKey, setKioskKey, uploadStrip, UploadError } from "@/lib/upload";
 import { BuddyPicker } from "./BuddyPicker";
@@ -49,11 +49,14 @@ function useIdle(active: boolean, ms: number, onIdle: () => void) {
 export default function Booth() {
   const router = useRouter();
   const [params] = useState(() => new URLSearchParams(window.location.search));
-  const demo = params.has("demo");  const [setup, setSetup] = useState(() => params.has("setup"));
+  const demo = params.has("demo");
+  const [setup, setSetup] = useState(() => params.has("setup"));
   const [buddyId, setBuddyId] = useState<CrewId>("sunny");
   const [step, setStep] = useState<Step>({ name: "pick" });
   // The shop room behind the strip: random to start, then whatever the visitor last picked.
   const [room, setRoom] = useState<RoomId>(randomRoom);
+  // The photo strip or an Instagram story, switched on the review screen.
+  const [format, setFormat] = useState<Format>("strip");
   const redraws = useRef(0);
   const urls = useRef<string[]>([]);
   const b = findBuddy(buddyId);
@@ -68,26 +71,28 @@ export default function Booth() {
 
   async function make(shots: HTMLCanvasElement[]) {
     setStep({ name: "making" });
-    const { jpeg, url } = await render(shots, room);
+    const { jpeg, url } = await render(shots, room, format);
     const line = pickLine(b.id, "done");
     speak(line);
     setStep({ name: "review", jpeg, url, line, shots });
   }
 
-  async function render(shots: HTMLCanvasElement[], r: RoomId) {
-    const jpeg = await toJpeg(await composeStrip({ shots, buddy: b, room: r }));
+  async function render(shots: HTMLCanvasElement[], r: RoomId, f: Format) {
+    const strip = await composeStrip({ shots, buddy: b, room: r });
+    const jpeg = await toJpeg(f === "story" ? await composeStory({ strip, room: r, buddy: b }) : strip);
     const url = URL.createObjectURL(jpeg);
     urls.current.push(url);
     return { jpeg, url };
   }
 
-  /** Redraws the strip in the review step with another room behind it. */
-  async function changeRoom(r: RoomId) {
-    if (step.name !== "review" || r === room) return;
+  /** Redraws the picture in the review step with another room or format. */
+  async function redraw(r: RoomId, f: Format) {
+    if (step.name !== "review" || (r === room && f === format)) return;
     setRoom(r);
+    setFormat(f);
     const n = ++redraws.current;
     setStep({ ...step, redrawing: true });
-    const { jpeg, url } = await render(step.shots, r);
+    const { jpeg, url } = await render(step.shots, r, f);
     if (n !== redraws.current) return; // the visitor picked again meanwhile
     setStep((s) => (s.name === "review" ? { ...s, jpeg, url, redrawing: false } : s));
   }
@@ -126,11 +131,13 @@ export default function Booth() {
         />
       )}
 
-      {step.name === "shoot" && <ShootStage buddy={b} demo={demo} onDone={make} onBack={() => setStep({ name: "pick" })} />}
+      {step.name === "shoot" && (
+        <ShootStage buddy={b} demo={demo} onDone={make} onBack={() => setStep({ name: "pick" })} />
+      )}
 
       {step.name === "making" && (
         <div className="flex flex-1 items-center justify-center text-2xl font-black" aria-live="polite">
-          Making your strip…
+          Making your photos…
         </div>
       )}
 
@@ -141,7 +148,7 @@ export default function Booth() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={step.url}
-              alt={`Your photo strip with ${b.name}`}
+              alt={`Your ${format === "story" ? "story" : "photo strip"} with ${b.name}`}
               className={`h-[min(74dvh,860px)] w-auto rounded-md shadow-card transition-opacity duration-150 ${step.name === "review" && step.redrawing ? "opacity-60" : ""}`}
             />
           </div>
@@ -158,9 +165,10 @@ export default function Booth() {
                   </SpeechBubble>
                 )}
                 <h2 className="mt-2 text-4xl font-black">Looking good!</h2>
+                <FormatToggle value={format} onChange={(f) => redraw(room, f)} />
                 <div className="flex flex-col gap-3">
                   <p className="text-lg font-extrabold text-ink-soft">Pick a background</p>
-                  <RoomPicker value={room} onChange={changeRoom} />
+                  <RoomPicker value={room} onChange={(r) => redraw(r, format)} />
                 </div>
                 <PillButton size="huge" disabled={step.redrawing} onClick={() => upload(step.jpeg, step.url)}>
                   <Icon name="check" size={30} /> Keep it
@@ -262,5 +270,31 @@ function Setup({ onClose }: { onClose: () => void }) {
         </PillButton>
       </RoomCard>
     </main>
+  );
+}
+
+/** The review screen's switch between the tall photo strip and the 9:16 story. */
+function FormatToggle({ value, onChange }: { value: Format; onChange: (f: Format) => void }) {
+  const options: { id: Format; label: string }[] = [
+    { id: "strip", label: "Photo strip" },
+    { id: "story", label: "Instagram story" },
+  ];
+  return (
+    <div role="radiogroup" aria-label="Format" className="grid grid-cols-2 gap-1 rounded-full bg-surface p-1 ring-1 ring-card-border">
+      {options.map((o) => (
+        <button
+          key={o.id}
+          type="button"
+          role="radio"
+          aria-checked={value === o.id}
+          onClick={() => onChange(o.id)}
+          className={`min-h-12 rounded-full px-4 text-lg font-extrabold transition-colors duration-150 active:scale-[0.97] ${
+            value === o.id ? "bg-ink text-on-ink" : "text-ink-soft"
+          }`}
+        >
+          {o.label}
+        </button>
+      ))}
+    </div>
   );
 }

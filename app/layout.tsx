@@ -8,7 +8,6 @@ const nunito = Nunito({ variable: "--font-nunito", subsets: ["latin"], weight: [
 export const metadata: Metadata = {
   title: "Yo! Mamma Photo Booth",
   description: "Strike a pose with your study buddy.",
-  icons: { icon: "/logo.svg" },
 };
 
 export const viewport: Viewport = {

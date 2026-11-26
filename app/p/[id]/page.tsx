@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Logo, RoomCard } from "@/components/ui";
 import { SaveButtons } from "@/components/SaveButtons";
 import { expiresOn, stripPath, stripUrl } from "@/lib/strip-id";
+import { TESTFLIGHT_URL } from "@/lib/app-links";
 
 export const metadata: Metadata = {
   title: "Your Yo! Mamma photo strip",
@@ -44,13 +45,35 @@ async function Strip({ params }: { params: Promise<{ id: string }> }) {
       {/* The strip on a lighter panel, as on the kiosk. */}
       <div className="rounded-stage bg-mint p-4 shadow-card ring-1 ring-card-border sm:p-6">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={src} alt="Your photo strip" width={900} height={2700} className="h-auto w-[min(100%,320px)] rounded-md shadow-card" />
+        <img src={src} alt="Your photos from the booth" className="h-auto w-[min(100%,320px)] rounded-md shadow-card" />
       </div>
       <SaveButtons src={src} downloadHref={stripUrl(base, path, `yomamma-${id}.jpg`)} fileName={`yomamma-${id}.jpg`} />
       <p className="text-center text-sm font-semibold text-ink-soft">
         On iPhone you can also press and hold the picture, then choose Save to Photos. It stays online until {until}.
       </p>
+      <GetTheApp />
     </div>
+  );
+}
+
+/** The way to the app from the visitor's own phone: a link, since they can't scan a code on the same screen. */
+function GetTheApp() {
+  return (
+    <RoomCard className="flex w-full items-center gap-4 p-5">
+      <Logo size={64} className="shrink-0" />
+      <div className="flex flex-1 flex-col gap-2">
+        <h2 className="text-lg font-black leading-tight">Get the Yo! Mamma app</h2>
+        <p className="text-sm font-semibold text-ink-soft">Study with your buddy on iPhone. Join the beta on TestFlight.</p>
+        <a
+          href={TESTFLIGHT_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-1 inline-flex min-h-11 items-center justify-center rounded-full bg-ink px-5 text-base font-extrabold text-on-ink active:scale-[0.97]"
+        >
+          Join on TestFlight
+        </a>
+      </div>
+    </RoomCard>
   );
 }
 

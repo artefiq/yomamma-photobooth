@@ -101,10 +101,19 @@ export function SpeechBubble({
   );
 }
 
-/** The "Yo!" bubble logo from the launch screen. */
+/** The app icon, with iOS-style rounded corners. */
 export function Logo({ size = 96, className }: { size?: number; className?: string }) {
-  // eslint-disable-next-line @next/next/no-img-element
-  return <img src="/logo.svg" alt="Yo! Mamma" width={size} height={size} className={className} draggable={false} />;
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src="/app-icon.png"
+      alt="Yo! Mamma"
+      width={size}
+      height={size}
+      className={cx("rounded-[22%] shadow-soft", className)}
+      draggable={false}
+    />
+  );
 }
 
 /** Simple stroked icons (SF Symbols aren't available on the web). */

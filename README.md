@@ -85,8 +85,7 @@ npm run import-assets
 
 It reads `../YoMomma`; pass a different path as an argument if yours is elsewhere. It rewrites:
 
-- `public/stickers`, `public/faces` and `public/voices`
-- `public/logo.svg`
+- `public/stickers`, `public/faces`, `public/voices` and `public/rooms`
 - `lib/voice-lines.json`, the buddies' introduction and "well done" lines with their words
 
 ## Budget

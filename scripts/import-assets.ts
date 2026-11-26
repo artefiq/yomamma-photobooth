@@ -3,7 +3,6 @@
 //   node scripts/import-assets.ts [path/to/YoMomma]     (default: ../YoMomma)
 //
 // Writes (all committed, so a deploy doesn't need the iOS repo):
-//   public/logo.svg                     the "Yo!" bubble from the launch screen
 //   public/faces/face_<buddy>_<mood>.png
 //   public/stickers/<buddy>-<pose>-<expression>.svg
 //   public/rooms/<room>.svg             the shop rooms a visitor can put behind their strip
@@ -20,10 +19,6 @@ const root = resolve(import.meta.dirname, "..");
 const ios = resolve(process.argv[2] ?? join(root, "..", "YoMomma"));
 const app = join(ios, "YoMamma");
 const out = (...p: string[]) => join(root, ...p);
-
-// Logo
-mkdirSync(out("public"), { recursive: true });
-copyFileSync(join(app, "Assets.xcassets/launch_logo.imageset/launch_logo.svg"), out("public/logo.svg"));
 
 // Faces
 mkdirSync(out("public/faces"), { recursive: true });

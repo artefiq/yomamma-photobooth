@@ -33,7 +33,7 @@ export default function Attract() {
         <span className="inline-flex min-h-20 items-center justify-center rounded-full bg-ink px-12 text-2xl font-extrabold text-on-ink shadow-lift">
           Tap to start
         </span>
-        <p className="text-base font-semibold text-ink-soft">4 photos · a strip to keep · scan to download</p>
+        <p className="text-base font-semibold text-ink-soft">4 photos · a strip or story · scan to download</p>
       </Link>
     </main>
   );

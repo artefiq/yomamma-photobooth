@@ -1,17 +1,18 @@
 "use client";
 
 // The shoot: a mirrored live camera framed like the strip's photo, the buddy posing in the same spot
-// they'll have in the strip, a 3-2-1 countdown, a flash, and four shots.
+// they'll have in the picture, a 3-2-1 countdown, a flash, and four shots.
 
 import { useEffect, useRef, useState } from "react";
 import { SHOTS, stickerPath, type Buddy } from "@/lib/crew";
 import { captureFrame, openCamera, openDemoCamera, stopCamera } from "@/lib/camera";
 import { beep, shutter, unlockAudio } from "@/lib/sound";
-import { PHOTO_ASPECT, buddySide } from "@/lib/strip";
+import { SHOOT, buddySide } from "@/lib/strip";
 import { Icon, PillButton, SpeechBubble } from "./ui";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-const CHEERS = ["Say cheese!", "Big smile!", "Strike a pose!", "Last one, go wild!"];
+const CHEERS = ["Say cheese!", "Big smile!", "Strike a pose!"];
+const cheer = (i: number, total: number) => (i === total - 1 ? "Last one, go wild!" : CHEERS[i]);
 
 type Phase = "starting" | "ready" | "shooting" | "error";
 
@@ -35,6 +36,7 @@ export function ShootStage({
   const [count, setCount] = useState(0);
   const [flash, setFlash] = useState(0);
   const [thumbs, setThumbs] = useState<string[]>([]);
+  const { shots: total, aspect } = SHOOT;
 
   useEffect(() => {
     alive.current = true;
@@ -64,7 +66,7 @@ export function ShootStage({
     unlockAudio();
     setPhase("shooting");
     const shots: HTMLCanvasElement[] = [];
-    for (let i = 0; i < SHOTS.length; i++) {
+    for (let i = 0; i < total; i++) {
       setShot(i);
       for (let n = 3; n >= 1; n--) {
         if (!alive.current) return;
@@ -88,10 +90,10 @@ export function ShootStage({
 
   return (
     <section className="flex flex-1 flex-col items-center justify-center gap-5 px-page py-6 lg:flex-row lg:items-center lg:gap-8">
-      <div className="flex w-full flex-col items-center gap-4" style={{ maxWidth: `calc(72dvh * ${PHOTO_ASPECT})` }}>
+      <div className="flex w-full flex-col items-center gap-4" style={{ maxWidth: `calc(72dvh * ${aspect})` }}>
         <div
           className="relative w-full overflow-hidden rounded-stage border-[10px] border-surface bg-ink-fixed shadow-card ring-1 ring-card-border"
-          style={{ aspectRatio: PHOTO_ASPECT }}
+          style={{ aspectRatio: aspect }}
         >
           <video ref={video} muted playsInline autoPlay className="absolute inset-0 size-full -scale-x-100 object-cover" />
 
@@ -121,7 +123,7 @@ export function ShootStage({
           {phase === "shooting" && count === 3 && (
             <div className={`absolute top-5 ${side === "right" ? "right-[20%]" : "left-[20%]"}`}>
               <SpeechBubble tail={side === "right" ? "right" : "left"} className="animate-pop whitespace-nowrap text-2xl font-black">
-                {CHEERS[shot]}
+                {cheer(shot, total)}
               </SpeechBubble>
             </div>
           )}
@@ -147,22 +149,23 @@ export function ShootStage({
           </PillButton>
           {phase === "shooting" ? (
             <p className="flex-1 text-center text-2xl font-black" aria-live="polite">
-              Photo {shot + 1} of {SHOTS.length}
+              Photo {shot + 1} of {total}
             </p>
           ) : (
             <PillButton size="huge" className="flex-1" onClick={run} disabled={phase !== "ready"}>
-              <Icon name="camera" size={30} /> Start · 4 photos
+              <Icon name="camera" size={30} /> Start · {total} photos
             </PillButton>
           )}
         </div>
       </div>
 
-      {/* The strip filling up */}
+      {/* The picture filling up */}
       <ol className="flex gap-3 lg:flex-col" aria-label="Photos taken">
-        {SHOTS.map((_, i) => (
+        {SHOTS.slice(0, total).map((_, i) => (
           <li
             key={i}
-            className={`aspect-[3/2] w-24 overflow-hidden rounded-md border-2 bg-surface lg:w-40 ${
+            style={{ aspectRatio: aspect }}
+            className={`w-24 overflow-hidden rounded-md border-2 bg-surface lg:w-40 ${
               phase === "shooting" && i === shot && !thumbs[i] ? "border-ember" : "border-card-border"
             }`}
           >
