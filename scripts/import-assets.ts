@@ -9,7 +9,7 @@
 //   public/voices/<ID>.m4a              introductions (IN) and "completed" lines (CP)
 //   lib/voice-lines.json                which line is which, with its words
 
-import { copyFileSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { copyFileSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { CREW, IDLE, SHOTS } from "../lib/crew.ts";
 import { ROOMS } from "../lib/rooms.ts";
@@ -46,12 +46,17 @@ for (const b of CREW) {
 // Voices: the line's words come from the Swift scripts; the recording is <ID>.m4a or its last take.
 const swift = ["Focus/VoiceIntros.swift", "Focus/VoiceScript.swift"].map((f) => readFileSync(join(app, f), "utf8")).join("\n");
 const lineRe = /VoiceLine\(id: "([A-Z]{3}-(IN|CP)\d\d)", crew: \.(\w+), group: \.\w+, number: \d+, text: "((?:[^"\\]|\\.)*)"\)/g;
+// Lines whose recordings came back wrong (VoiceLine.flagged, kept in step with FLAGGED in Tools/import_voices.py).
+const flaggedSrc = readFileSync(join(app, "Focus/VoiceLine.swift"), "utf8").match(/static let flagged: Set<String> = \[([^\]]*)\]/);
+if (!flaggedSrc) throw new Error("VoiceLine.flagged not found in VoiceLine.swift");
+const flagged = new Set([...flaggedSrc[1].matchAll(/"([^"]+)"/g)].map((m) => m[1]));
 const folders: Record<string, string> = { sunny: "Sunny", rio: "Rio", coachJim: "CoachJim", mira: "Mira", reeves: "Reeves" };
 type Line = { id: string; text: string; src: string };
 const lines: Record<string, { intro: Line[]; done: Line[] }> = {};
 mkdirSync(out("public/voices"), { recursive: true });
 for (const m of swift.matchAll(lineRe)) {
   const [, id, group, crew, rawText] = m;
+  if (flagged.has(id)) continue;
   const folder = join(app, "Voices", folders[crew]);
   const takes = readdirSync(folder).filter((f) => f === `${id}.m4a` || f.startsWith(`${id}_take`)).sort();
   const file = takes.at(-1);
@@ -61,6 +66,11 @@ for (const m of swift.matchAll(lineRe)) {
   (group === "IN" ? entry.intro : entry.done).push({ id, text: rawText.replace(/\\(.)/g, "$1"), src: `/voices/${id}.m4a` });
 }
 writeFileSync(out("lib/voice-lines.json"), JSON.stringify(lines, null, 2) + "\n");
+// Drop recordings that were removed from the iOS project or flagged there.
+const kept = new Set(Object.values(lines).flatMap((l) => [...l.intro, ...l.done]).map((l) => `${l.id}.m4a`));
+for (const f of readdirSync(out("public/voices"))) {
+  if (f.endsWith(".m4a") && !kept.has(f)) rmSync(out("public/voices", f));
+}
 
 const counts = Object.entries(lines).map(([c, l]) => `${c} ${l.intro.length}+${l.done.length}`).join(", ");
 console.log(`Imported from ${ios}\n  ${stickers} stickers\n  voices: ${counts}`);
