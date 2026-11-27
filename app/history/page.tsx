@@ -2,15 +2,15 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Logo } from "@/components/ui";
-import { secretMatches, supabaseAdmin, supabaseConfigured } from "@/lib/supabase-server";
-import { BUCKET, expiresOn, stripUrl } from "@/lib/strip-id";
+import { manyStripLinks, secretMatches, supabaseAdmin, supabaseConfigured } from "@/lib/supabase-server";
+import { BUCKET, SHOWN_FROM, expiresOn } from "@/lib/strip-id";
 
 export const metadata: Metadata = {
   title: "Photo history · Yo! Mamma Photo Booth",
   robots: { index: false, follow: false },
 };
 
-// Every strip still in storage, newest day first. For the team only: nothing links here, and it needs the
+// Every strip still in storage from SHOWN_FROM on, newest day first. For the team only: nothing links here, and it needs the
 // kiosk key in the URL (/history?key=$KIOSK_SECRET). Without the right key it answers like a missing page.
 export default function HistoryPage(props: PageProps<"/history">) {
   return (
@@ -28,8 +28,7 @@ async function History({ searchParams }: { searchParams: Promise<Record<string, 
   const { key } = await searchParams;
   if (!secretMatches(typeof key === "string" ? key : null, process.env.KIOSK_SECRET)) notFound();
 
-  const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  if (!supabaseConfigured() || !base) return <Note text="Supabase isn't configured, so there are no uploaded strips." />;
+  if (!supabaseConfigured()) return <Note text="Supabase isn't configured, so there are no uploaded strips." />;
 
   const storage = supabaseAdmin().storage.from(BUCKET);
   const { data: folders, error } = await storage.list("", { limit: 1000, sortBy: { column: "name", order: "desc" } });
@@ -38,7 +37,7 @@ async function History({ searchParams }: { searchParams: Promise<Record<string, 
   const days = await Promise.all(
     (folders ?? [])
       .map((f) => f.name)
-      .filter((name) => DAY_FOLDER.test(name))
+      .filter((name) => DAY_FOLDER.test(name) && name >= SHOWN_FROM)
       .map(async (day) => {
         const { data } = await storage.list(day, { limit: 1000, sortBy: { column: "created_at", order: "desc" } });
         const strips = (data ?? [])
@@ -47,6 +46,7 @@ async function History({ searchParams }: { searchParams: Promise<Record<string, 
         return { day, strips };
       }),
   );
+  const links = await manyStripLinks(days.flatMap((d) => d.strips.map((s) => s.id)));
   const total = days.reduce((n, d) => n + d.strips.length, 0);
 
   return (
@@ -74,16 +74,16 @@ async function History({ searchParams }: { searchParams: Promise<Record<string, 
               </span>
             </h2>
             <ul className="grid grid-cols-3 gap-3 sm:grid-cols-5 lg:grid-cols-8">
-              {strips.map((s) => (
+              {strips.map((s) => links.has(s.id) && (
                 <li key={s.id} className="flex flex-col gap-1">
-                  <a href={stripUrl(base, s.path)} target="_blank" rel="noopener" className="block overflow-hidden rounded-md bg-mint p-1.5 shadow-card ring-1 ring-card-border">
+                  <a href={links.get(s.id)!.src} target="_blank" rel="noopener" className="block overflow-hidden rounded-md bg-mint p-1.5 shadow-card ring-1 ring-card-border">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={stripUrl(base, s.path)} alt={`Strip ${s.id}`} loading="lazy" className="aspect-[1/3] w-full rounded-sm object-cover" />
+                    <img src={links.get(s.id)!.src} alt={`Strip ${s.id}`} loading="lazy" className="aspect-[1/3] w-full rounded-sm object-cover" />
                   </a>
                   <div className="flex items-center justify-between gap-1 text-xs font-bold text-ink-soft">
                     <span>{s.at ? new Date(s.at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Makassar" }) : ""}</span>
                     <a href={`/p/${s.id}`} target="_blank" rel="noopener" className="underline">page</a>
-                    <a href={stripUrl(base, s.path, `yomamma-${s.id}.jpg`)} className="underline">save</a>
+                    <a href={links.get(s.id)!.download} className="underline">save</a>
                   </div>
                 </li>
               ))}

@@ -8,7 +8,7 @@ A web photo booth for the Yo! Mamma exhibition stand at the Apple Developer Acad
 4. The strip is uploaded, and the kiosk shows a QR code.
 5. The visitor scans the code and saves the strip on their own phone.
 
-Strips are deleted automatically after 30 days.
+Strips are deleted automatically after 30 days. Strips from before 27 November 2026 (`SHOWN_FROM` in [`lib/strip-id.ts`](lib/strip-id.ts)) are hidden everywhere.
 
 | | |
 |---|---|
@@ -32,7 +32,7 @@ Open <http://localhost:3000>.
 ## Set up storage (Supabase, free)
 
 1. Create a project at [supabase.com](https://supabase.com). No credit card is needed.
-2. **SQL Editor:** run [`supabase/setup.sql`](supabase/setup.sql). It creates the public `strips` bucket, limited to JPEG files of 2 MB or less.
+2. **SQL Editor:** run [`supabase/setup.sql`](supabase/setup.sql). It creates the private `strips` bucket, limited to JPEG files of 2 MB or less. Nobody can read a file from Supabase directly: the site gives out signed links that work for a day.
 3. Copy `.env.example` to `.env.local`.
    - From **Project Settings → API**, fill in the project URL, the publishable key and the secret key.
    - Set `KIOSK_SECRET` and `CRON_SECRET` to long random strings (`openssl rand -hex 24`).
@@ -62,8 +62,8 @@ The kiosk returns to the start screen after 90 seconds without a tap, and 60 sec
 |---|---|
 | `/` | Attract screen |
 | `/booth` | The kiosk. Steps: pick a buddy → shoot → review → upload → QR code. Adding `?demo` uses the demo camera; `?setup` opens the kiosk key screen |
-| `/p/<id>` | What the visitor's phone opens. It shows the strip with **Save or share** (the phone's share sheet) and **Download** |
-| `/history?key=<KIOSK_SECRET>` | Team only, linked from nowhere: every strip still in storage, grouped by day. Without the key it shows a 404 |
+| `/p/<id>` | What the visitor's phone opens. It shows the strip with **Save or share** (the phone's share sheet) and **Download**, through signed links. Strips before `SHOWN_FROM` show "We can't find that strip" |
+| `/history?key=<KIOSK_SECRET>` | Team only, linked from nowhere: every strip from `SHOWN_FROM` on that's still in storage, grouped by day. Without the key it shows a 404 |
 | `POST /api/upload-url` | Checks the kiosk key, then returns a one-time signed upload URL for `strips/<yyyy-mm-dd>/<id>.jpg` |
 | `GET /api/cleanup` | Deletes day folders older than 30 days. Needs `Authorization: Bearer $CRON_SECRET` |
 

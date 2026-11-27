@@ -3,7 +3,8 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { Logo, RoomCard } from "@/components/ui";
 import { SaveButtons } from "@/components/SaveButtons";
-import { expiresOn, stripPath, stripUrl } from "@/lib/strip-id";
+import { expiresOn } from "@/lib/strip-id";
+import { stripLinks } from "@/lib/supabase-server";
 import { INSTAGRAM_HANDLE, INSTAGRAM_URL, TESTFLIGHT_URL, TIKTOK_HANDLE, TIKTOK_URL } from "@/lib/app-links";
 
 export const metadata: Metadata = {
@@ -32,16 +33,13 @@ export default function StripPage(props: PageProps<"/p/[id]">) {
 
 async function Strip({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const path = stripPath(id);
-  const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
-
-  if (!path || !base) return <Gone title="We can't find that strip" body="Check the link, or scan the code at the booth again." />;
-
-  const src = stripUrl(base, path);
-  const found = await fetch(src, { method: "HEAD", cache: "no-store" }).then((r) => r.ok, () => false);
-  if (!found) {
-    return <Gone title="This strip has gone" body="Strips are kept for 30 days after the exhibition photo, then deleted." />;
+  // Hidden strips (before SHOWN_FROM), unknown ids and deleted files all look the same from outside.
+  const links = await stripLinks(id);
+  const found = links && (await fetch(links.src, { method: "HEAD", cache: "no-store" }).then((r) => r.ok, () => false));
+  if (!links || !found) {
+    return <Gone title="We can't find that strip" body="Strips are kept for 30 days, then deleted. Check the link, or scan the code at the booth again." />;
   }
+  const { src } = links;
 
   const until = expiresOn(id)!.toLocaleDateString("en-US", { day: "numeric", month: "long", timeZone: "UTC" });
   const android = /Android/i.test((await headers()).get("user-agent") ?? "");
@@ -52,7 +50,7 @@ async function Strip({ params }: { params: Promise<{ id: string }> }) {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={src} alt="Your photos from the booth. Tap to see it full size." className="h-auto max-h-[55dvh] w-auto max-w-full rounded-md shadow-card" />
       </a>
-      <SaveButtons src={src} downloadHref={stripUrl(base, path, `yomamma-${id}.jpg`)} fileName={`yomamma-${id}.jpg`} />
+      <SaveButtons src={src} downloadHref={links.download} fileName={`yomamma-${id}.jpg`} />
       <p className="-mt-2 text-center text-sm font-semibold text-ink-soft">
         Tap the picture to see it full size. It stays online until {until}.
       </p>

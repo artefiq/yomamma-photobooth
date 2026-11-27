@@ -7,6 +7,9 @@ import { customAlphabet } from "nanoid";
 
 export const BUCKET = "strips";
 export const KEEP_DAYS = 30;
+/** Strips from days before this are hidden everywhere: the visitor page, the history page, and (with the
+ *  bucket private) Supabase itself, since the server only signs links for strips on or after it. */
+export const SHOWN_FROM = "2026-11-27";
 
 const random = customAlphabet("23456789abcdefghjkmnpqrstuvwxyz", 8);
 const ID = /^(\d{4})(\d{2})(\d{2})-[a-z0-9]{8}$/;
@@ -18,14 +21,20 @@ export function newStripId(now = new Date()): string {
 
 /** The file's path in the bucket, or null for an id that isn't one of ours. */
 export function stripPath(id: string): string | null {
-  const m = ID.exec(id);
-  return m ? `${m[1]}-${m[2]}-${m[3]}/${id}.jpg` : null;
+  const day = stripDay(id);
+  return day ? `${day}/${id}.jpg` : null;
 }
 
-/** The public URL of a strip; with `download`, the browser saves it under that name. */
-export function stripUrl(supabaseUrl: string, path: string, download?: string): string {
-  const url = `${supabaseUrl.replace(/\/$/, "")}/storage/v1/object/public/${BUCKET}/${path}`;
-  return download ? `${url}?download=${encodeURIComponent(download)}` : url;
+/** The strip's day as yyyy-mm-dd, or null for an id that isn't one of ours. */
+export function stripDay(id: string): string | null {
+  const m = ID.exec(id);
+  return m ? `${m[1]}-${m[2]}-${m[3]}` : null;
+}
+
+/** Whether visitors (and the history page) may see this strip at all. */
+export function isShown(id: string): boolean {
+  const day = stripDay(id);
+  return day !== null && day >= SHOWN_FROM;
 }
 
 /** When a strip from this id stops being available. */
