@@ -63,6 +63,7 @@ The kiosk returns to the start screen after 90 seconds without a tap, and 60 sec
 | `/` | Attract screen |
 | `/booth` | The kiosk. Steps: pick a buddy → shoot → review → upload → QR code. Adding `?demo` uses the demo camera; `?setup` opens the kiosk key screen |
 | `/p/<id>` | What the visitor's phone opens. It shows the strip with **Save or share** (the phone's share sheet) and **Download** |
+| `/history?key=<KIOSK_SECRET>` | Team only, linked from nowhere: every strip still in storage, grouped by day. Without the key it shows a 404 |
 | `POST /api/upload-url` | Checks the kiosk key, then returns a one-time signed upload URL for `strips/<yyyy-mm-dd>/<id>.jpg` |
 | `GET /api/cleanup` | Deletes day folders older than 30 days. Needs `Authorization: Bearer $CRON_SECRET` |
 
