@@ -1,12 +1,34 @@
-// The kiosk camera: the front camera at the best resolution it offers, or a moving test pattern
-// ("demo camera") for trying the booth on a machine without one.
+// The kiosk camera: the chosen camera (or the browser's default) at the best resolution it offers, or a
+// moving test pattern ("demo camera") for trying the booth on a machine without one.
 
-export async function openCamera(): Promise<MediaStream> {
+const CAMERA_KEY = "photobooth.camera";
+
+/** The camera the booth was last pointed at, so a kiosk with several (laptop + Studio Display) keeps its pick. */
+export const savedCameraId = () => (typeof localStorage === "undefined" ? "" : localStorage.getItem(CAMERA_KEY) ?? "");
+export const saveCameraId = (id: string) => localStorage.setItem(CAMERA_KEY, id);
+
+export async function openCamera(deviceId?: string): Promise<MediaStream> {
   if (!navigator.mediaDevices?.getUserMedia) throw new Error("This browser can't use the camera (it needs HTTPS or localhost).");
-  return navigator.mediaDevices.getUserMedia({
-    audio: false,
-    video: { facingMode: "user", width: { ideal: 1920 }, height: { ideal: 1080 } },
-  });
+  const size = { width: { ideal: 1920 }, height: { ideal: 1080 } };
+  if (deviceId) {
+    try {
+      return await navigator.mediaDevices.getUserMedia({ audio: false, video: { deviceId: { exact: deviceId }, ...size } });
+    } catch (e) {
+      // The saved camera is unplugged or gone: fall back to the default rather than failing.
+      if (!(e instanceof Error) || !["OverconstrainedError", "NotFoundError"].includes(e.name)) throw e;
+    }
+  }
+  return navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: "user", ...size } });
+}
+
+export type Camera = { id: string; label: string };
+
+/** The video inputs. Labels only appear once the page has camera permission, so call it after opening one. */
+export async function listCameras(): Promise<Camera[]> {
+  const devices = await navigator.mediaDevices.enumerateDevices();
+  return devices
+    .filter((d) => d.kind === "videoinput" && d.deviceId)
+    .map((d, i) => ({ id: d.deviceId, label: d.label || `Camera ${i + 1}` }));
 }
 
 /** A 1280 × 720 stream of a drifting gradient with a smiley, drawn on a canvas. */

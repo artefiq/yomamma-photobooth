@@ -5,7 +5,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { SHOTS, stickerPath, type Buddy } from "@/lib/crew";
-import { captureFrame, openCamera, openDemoCamera, stopCamera } from "@/lib/camera";
+import { captureFrame, listCameras, openCamera, openDemoCamera, saveCameraId, savedCameraId, stopCamera, type Camera } from "@/lib/camera";
 import { beep, shutter, unlockAudio } from "@/lib/sound";
 import { SHOOT, buddySide } from "@/lib/strip";
 import { Icon, PillButton, SpeechBubble } from "./ui";
@@ -36,6 +36,9 @@ export function ShootStage({
   const [count, setCount] = useState(0);
   const [flash, setFlash] = useState(0);
   const [thumbs, setThumbs] = useState<string[]>([]);
+  const [cameras, setCameras] = useState<Camera[]>([]);
+  const [chosenCamera, setChosenCamera] = useState(savedCameraId);
+  const [activeCamera, setActiveCamera] = useState("");
   const { shots: total, aspect } = SHOOT;
 
   useEffect(() => {
@@ -43,8 +46,12 @@ export function ShootStage({
     let stream: MediaStream | null = null;
     (async () => {
       try {
-        stream = useDemo ? openDemoCamera() : await openCamera();
+        stream = useDemo ? openDemoCamera() : await openCamera(chosenCamera || undefined);
         if (!alive.current) return stopCamera(stream);
+        if (!useDemo) {
+          setActiveCamera(stream.getVideoTracks()[0]?.getSettings().deviceId ?? "");
+          setCameras(await listCameras());
+        }
         const v = video.current!;
         v.srcObject = stream;
         await v.play().catch(() => {});
@@ -54,13 +61,31 @@ export function ShootStage({
           ? "The camera is blocked. Allow camera access for this site in the browser settings."
           : e instanceof Error ? e.message : "The camera didn't start.");
         setPhase("error");
+        // If this camera is busy or broken, the others can still be picked.
+        listCameras().then(setCameras).catch(() => {});
       }
     })();
     return () => {
       alive.current = false;
       stopCamera(stream);
     };
-  }, [useDemo]);
+  }, [useDemo, chosenCamera]);
+
+  // Plugging in a monitor or webcam mid-session should show up in the picker.
+  useEffect(() => {
+    const md = navigator.mediaDevices;
+    if (!md) return;
+    const refresh = () => listCameras().then(setCameras).catch(() => {});
+    md.addEventListener("devicechange", refresh);
+    return () => md.removeEventListener("devicechange", refresh);
+  }, []);
+
+  function pickCamera(id: string) {
+    saveCameraId(id);
+    setPhase("starting");
+    setUseDemo(false);
+    setChosenCamera(id);
+  }
 
   async function run() {
     unlockAudio();
@@ -157,6 +182,22 @@ export function ShootStage({
             </PillButton>
           )}
         </div>
+
+        {cameras.length > 1 && phase !== "shooting" && (
+          <label className="flex w-full items-center gap-3 text-base font-bold">
+            <span className="shrink-0">Camera</span>
+            <select
+              value={useDemo ? "" : activeCamera}
+              onChange={(e) => pickCamera(e.target.value)}
+              className="min-w-0 flex-1 rounded-full border-2 border-card-border bg-surface px-4 py-2 font-bold"
+            >
+              {useDemo && <option value="">Demo camera</option>}
+              {cameras.map((c) => (
+                <option key={c.id} value={c.id}>{c.label}</option>
+              ))}
+            </select>
+          </label>
+        )}
       </div>
 
       {/* The picture filling up */}
